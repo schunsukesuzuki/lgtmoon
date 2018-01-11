@@ -88,12 +88,19 @@
                     this.seen = true
                 },
                 /** 動画詳細モーダルを閉じる */
-                close: function(event) {
+                close: function (event) {
                     // オーバーレイとモーダルを消す
                     this.seen = false
-                }
+                },
             }
         });
+        // image_id=? と指定されていた場合はそのモーダルを開く
+        let imageId = getQueryString('image_id');
+        if(imageId !== undefined) {
+            let imageUrl = getImageUrl(imageId);
+            vmDetail.open(imageUrl);
+        }
+
         // 検索結果の view model を初期化
         vmSearchResults = new Vue({
             el: '#search-results',
@@ -269,6 +276,28 @@
                 console.log("file upload processing complete");
             }
         });
+    }
+
+    function getQueryString(targetKey) {
+        let queryString = window.location.search.substring(1); // substring(1)は'?'を取り除くため
+        let params = queryString.split('&');
+        for (let param of params) {
+            let pair = param.split('=');
+            let key = pair[0];
+            let value = pair[1];
+            if(key === targetKey) {
+                return value;
+            }
+        }
+        return undefined;
+    }
+
+    function getImageUrl(imageId) {
+        return getRootUrl() + "images/" + imageId;
+    }
+
+    function getRootUrl() {
+        return urlWithoutQuery = window.location.href.split('?')[0];
     }
 
 }).call(this);
